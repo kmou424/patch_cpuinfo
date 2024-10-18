@@ -3,12 +3,16 @@
 static struct kobject *patch_cpuinfo_kobj;
 
 static void patch_model_name(const char *model_name) {
-    struct cpuinfo_x86 *cpuinfo = &cpu_data(0);
+    int cpu;
 
-    strncpy(cpuinfo->x86_model_id, model_name, sizeof(cpuinfo->x86_model_id));
-    cpuinfo->x86_model_id[sizeof(cpuinfo->x86_model_id) - 1] = '\0';
+    for_each_possible_cpu(cpu) {
+        struct cpuinfo_x86 *cpuinfo = &cpu_data(cpu);
 
-    printk(KERN_INFO "patch_cpuinfo: model name has been changed to %s\n", cpuinfo->x86_model_id);
+        strncpy(cpuinfo->x86_model_id, model_name, sizeof(cpuinfo->x86_model_id));
+        cpuinfo->x86_model_id[sizeof(cpuinfo->x86_model_id) - 1] = '\0';
+
+        printk(KERN_INFO "patch_cpuinfo: CPU %d model name -> %s\n", cpu, cpuinfo->x86_model_id);
+    }
 }
 
 static ssize_t write_model_name(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count) {
