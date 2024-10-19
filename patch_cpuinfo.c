@@ -49,8 +49,6 @@ static int __init patch_cpuinfo_init(void) {
         return err;
     }
 
-    patch_model_name("Intel(R) Core(TM) i9-13900T ES");
-
     return 0;
 }
 
